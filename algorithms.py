@@ -128,7 +128,7 @@ def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_i
     t = 1
     iterations = 0
     while True:        
-        if func((value_0 + direction * t), 0) > func(value_0 , 0) + alpha * t * gradient_0 * direction :
+        if (func((x + direction * t), 0)) > (func(x , 0) + alpha * t * gradient_0 * direction) :
             t = beta * t
         else:
             break
@@ -237,7 +237,7 @@ def newton( func, initial_x, eps=1e-5, maximum_iterations=65536, linesearch=bise
         direction = - (LA.inv(hessian) * gradient)          
         # if (TODO: TERMINATION CRITERION): break
         
-        if (np.transpose(gradient) * LA.inv(hessian) * gradient)/2 <= eps:
+        if (np.transpose(gradient) * LA.inv(hessian) * gradient) <= eps:
             break
 
         t = linesearch( func, x, direction )
