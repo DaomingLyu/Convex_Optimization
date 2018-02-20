@@ -4,7 +4,7 @@
 
 import time
 import numpy as np
-
+from numpy import linalg as LA 
 
 def bisection( one_d_fun, MIN, MAX, eps=1e-5, maximum_iterations=65536 ):
 
@@ -24,12 +24,12 @@ def bisection( one_d_fun, MIN, MAX, eps=1e-5, maximum_iterations=65536 ):
     value, derivative = one_d_fun( MID, 1 )
 
     # if (TODO: TERMINATION CRITERION): break
-    if value = eps:
-        break
-    if derivative > 0:
-        MIN = MID+1
-    else if derivative < 0 :
-        MAX = MID-1 
+    if derivative == eps:
+        breaks
+    if derivative < 0:
+        MIN = MID
+    elif derivative > 0 :
+        MAX = MID 
 
     # if derivative... (TODO\
     #: LINE SEARCH)
@@ -128,11 +128,15 @@ def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_i
     t = 1
     iterations = 0
     while True:        
-        if 
+        if func((value_0 + direction * t), 0) > func(value_0 , 0) + alpha * t * gradient_0 * direction :
+            t = beta * t
+        else:
+            break
         # if (TODO: TERMINATION CRITERION): break
 
         # t = TODO: BACKTRACKING LINE SEARCH
         
+
         iterations += 1
         if iterations >= maximum_iterations:
             break
@@ -175,13 +179,14 @@ def gradient_descent( func, initial_x, eps=1e-5, maximum_iterations=65536, lines
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
         
-        # direction= (TODO)
-
+        direction = -1 * gradient
+        if LA.norm(x) <= eps:
+            break
         # if (TODO: TERMINATION CRITERION): break
         
         t = linesearch( func, x, direction, *linesearch_args )
         
-        # x= (TODO: UPDATE x)
+        x =x + (t * direction)  
         
         iterations += 1
         if iterations >= maximum_iterations:
@@ -229,9 +234,12 @@ def newton( func, initial_x, eps=1e-5, maximum_iterations=65536, linesearch=bise
         xs.append( x.copy() )
 
         # direction = (TODO)
-                    
+        direction = - (LA.inv(hessian) * gradient)          
         # if (TODO: TERMINATION CRITERION): break
         
+        if (np.transpose(gradient) * LA.inv(hessian) * gradient)/2 <= eps:
+            break
+
         t = linesearch( func, x, direction )
 
         # x = (TODO: UPDATE x)
