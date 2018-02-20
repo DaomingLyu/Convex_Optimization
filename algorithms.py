@@ -4,7 +4,6 @@
 
 import time
 import numpy as np
-from numpy import linalg as LA 
 
 def bisection( one_d_fun, MIN, MAX, eps=1e-5, maximum_iterations=65536 ):
 
@@ -128,7 +127,7 @@ def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_i
     t = 1
     iterations = 0
     while True:        
-        if (func((x + direction * t), 0)) > (func(x , 0) + alpha * t * gradient_0 * direction) :
+        if (func((x + t * direction) , 0 )) > (func(x, 0) + alpha * t * gradient_0.T * direction) :
             t = beta * t
         else:
             break
@@ -179,8 +178,8 @@ def gradient_descent( func, initial_x, eps=1e-5, maximum_iterations=65536, lines
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
         
-        direction = -1 * gradient
-        if LA.norm(x) <= eps:
+        direction = - gradient
+        if (x.T * x) <= eps:
             break
         # if (TODO: TERMINATION CRITERION): break
         
@@ -234,10 +233,10 @@ def newton( func, initial_x, eps=1e-5, maximum_iterations=65536, linesearch=bise
         xs.append( x.copy() )
 
         # direction = (TODO)
-        direction = - (LA.inv(hessian) * gradient)          
+        direction = - (hessian.I * gradient)          
         # if (TODO: TERMINATION CRITERION): break
         
-        if (np.transpose(gradient) * LA.inv(hessian) * gradient) <= eps:
+        if (gradient.T * hessian.I * gradient) <= eps:
             break
 
         t = linesearch( func, x, direction )
