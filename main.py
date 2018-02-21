@@ -59,7 +59,7 @@ x, values, runtimes, newton_xs = alg.newton( func, initial_x, eps, maximum_itera
 print('Optimum of the quadratic function found by Newton with backtracking line search', x.T)
 
 # Draw contour plots
-#hw1_func.draw_contour( func, gd_xs, newton_xs, 0, levels=np.arange(5, 400, 20), x=np.arange(-5, 5.1, 0.1), y=np.arange(-5, 5.1, 0.1))
+hw1_func.draw_contour( func, gd_xs, newton_xs, 0, levels=np.arange(5, 400, 20), x=np.arange(-5, 5.1, 0.1), y=np.arange(-5, 5.1, 0.1))
 
 
 # Run Netwon on the quadratic function

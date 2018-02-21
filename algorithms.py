@@ -23,13 +23,13 @@ def bisection( one_d_fun, MIN, MAX, eps=1e-5, maximum_iterations=65536 ):
     value, derivative = one_d_fun( MID, 1 )
 
     # if (TODO: TERMINATION CRITERION): break
-    if derivative == eps:
-        breaks
+    if abs(MAX-MIN) <= eps:
+        break
     if derivative < 0:
         MIN = MID
     elif derivative > 0 :
         MAX = MID 
-
+    
     # if derivative... (TODO\
     #: LINE SEARCH)
 
@@ -129,6 +129,7 @@ def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_i
     while True:        
         if (func((x + t * direction) , 0 )) > (func(x, 0) + alpha * t * gradient_0.T * direction) :
             t = beta * t
+
         else:
             break
         # if (TODO: TERMINATION CRITERION): break
@@ -178,11 +179,14 @@ def gradient_descent( func, initial_x, eps=1e-5, maximum_iterations=65536, lines
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
         
-        direction = - gradient
-        if (x.T * x) <= eps:
+        norm = np.linalg.norm(gradient)
+        # norm = gradient.T * gradient
+
+        if norm**2 <= eps:
             break
         # if (TODO: TERMINATION CRITERION): break
-        
+        direction = -gradient
+
         t = linesearch( func, x, direction, *linesearch_args )
         
         x =x + (t * direction)  
@@ -232,12 +236,13 @@ def newton( func, initial_x, eps=1e-5, maximum_iterations=65536, linesearch=bise
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
 
+        if (gradient.T * hessian.I * gradient) < eps:
+            break
+
         # direction = (TODO)
         direction = - (hessian.I * gradient)          
         # if (TODO: TERMINATION CRITERION): break
         
-        if (gradient.T * hessian.I * gradient) <= eps:
-            break
 
         t = linesearch( func, x, direction )
 
