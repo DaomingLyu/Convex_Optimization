@@ -287,8 +287,38 @@ def bfgs( func, initial_x, initial_inv_h, eps=1e-5, maximum_iterations=65536, li
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
 
-        # TODO: code the entire bfgs algorithm
+        norm = np.linalg.norm(gradient)
+        if norm <= eps:
+            break
+        direction = - inv_h * old_gradient
+
+        t = linesearch( func, x, direction )
+        old_x = x
+        x = old_x + t * direction
+        s = x - old_x
+
+        y = gradient - old_gradient
+        old_gradient = gradient
+
+        if (y.T * s) > 1e-9:
+            Nu = 1/(y.T * s)
+
+            if np.isscalar( Nu ):
+                nu = Nu
+            else:
+                nu = np.asscalar(Nu)
+            
+            mat1 = nu * s * y.T
+            mat2 = nu * y * s.T
+            mat3 = nu * s * s.T
+
+
+            inv_h = (np.identity(np.shape(mat1)[0]) - mat1) * inv_h * (np.identity(np.shape(mat2)[0]) - mat2) + mat3
+
+
+            # TODO: code the entire bfgs algorithm
         
+
         iterations += 1
         if iterations >= maximum_iterations:
             break
