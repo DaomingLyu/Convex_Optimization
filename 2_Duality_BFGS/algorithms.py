@@ -260,7 +260,8 @@ def bfgs( func, initial_x, initial_inv_h, eps=1e-5, maximum_iterations=65536, li
     x = np.matrix( initial_x )
 
     if np.isscalar( initial_inv_h ):
-        inv_h = initial_inv_h
+        inv_h = initial_inv_h * np.identity(np.shape(x)[0])
+        #inv_h = initial_inv_h
     else:
         inv_h = np.asmatrix( initial_inv_h.copy() )
     
@@ -290,20 +291,37 @@ def bfgs( func, initial_x, initial_inv_h, eps=1e-5, maximum_iterations=65536, li
         norm = np.linalg.norm(gradient)
         if norm <= eps:
             break
-        direction = - inv_h * old_gradient
+        direction = - inv_h * gradient
 
         t = linesearch( func, x, direction )
+
         old_x = x
         x = old_x + t * direction
         s = x - old_x
 
-        y = gradient - old_gradient
+#        val, new_gradient = func(x,1)
+#        new_gradient = np.matrix(new_gradient)
+
+        #y = new_gradient - gradient
         old_gradient = gradient
+        value, gradient = func(x, 1)
+        value = np.double( value)
+        gradient = np.matrix(gradient)
+
+
+        y = gradient - old_gradient
+#        old_gradient = gradient
+
+
+        #print(gradient)
+
+        # print(old_gradient )
 
         if (y.T * s) > 1e-9:
             Nu = 1/(y.T * s)
 
             if np.isscalar( Nu ):
+                #nu = Nu * np.identity(np.shape())
                 nu = Nu
             else:
                 nu = np.asscalar(Nu)
@@ -313,8 +331,7 @@ def bfgs( func, initial_x, initial_inv_h, eps=1e-5, maximum_iterations=65536, li
             mat3 = nu * s * s.T
 
 
-            inv_h = (np.identity(np.shape(mat1)[0]) - mat1) * inv_h * (np.identity(np.shape(mat2)[0]) - mat2) + mat3
-
+            inv_h = ((np.identity(np.shape(mat1)[0]) - mat1) * inv_h * (np.identity(np.shape(mat2)[0]) - mat2)) + mat3
 
             # TODO: code the entire bfgs algorithm
         

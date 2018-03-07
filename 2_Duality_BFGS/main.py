@@ -77,4 +77,4 @@ line_newton, = plt.semilogy([x - hw_func.rosenbrock_func([1.0, 1.0]) for x in bf
 plt.show()
 
 # Draw contour plots
-# hw_func.draw_contour( hw_func.rosenbrock_func, gd_xs, newton_xs, 1, levels=np.arange(0, 500, 10), x=np.arange(-2, 2, 0.1), y=np.arange(-2, 2, 0.1))
+#hw_func.draw_contour( hw_func.rosenbrock_func, gd_xs, newton_xs, 1, levels=np.arange(0, 500, 10), x=np.arange(-2, 2, 0.1), y=np.arange(-2, 2, 0.1))
