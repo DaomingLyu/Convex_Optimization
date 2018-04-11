@@ -97,14 +97,15 @@ def exact_line_search( func, x, direction, eps=1e-9, maximum_iterations=65536 ):
 
 ###############################################################################
 def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_iterations=65536 ):
-    """ 
-    Backtracking linesearch
+    """
+    Backtracking linesearch 65536
     func:               the function to optimize It is called as "value, gradient = func( x, 1 )
     x:                  the current iterate
     direction:          the direction along which to perform the linesearch
     alpha:              the alpha parameter to backtracking linesearch
     beta:               the beta parameter to backtracking linesearch
-    maximum_iterations: the maximum allowed number of iterations
+    
+    ximum_iterations: the maximum allowed number of iterations
     """
 
     if alpha <= 0:
@@ -125,7 +126,7 @@ def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_i
     iterations = 0
     while True:        
     
-        if func(x+t*direction, 0)<value_0 + alpha * t * gradient_0.T*direction:
+        if func(x+t*direction, 0) <= value_0 + alpha * t * gradient_0.T*direction:
             break
 
         t=t*beta
@@ -133,7 +134,6 @@ def backtracking_line_search( func, x, direction, alpha=0.4, beta=0.9, maximum_i
         iterations += 1
         if iterations >= maximum_iterations:
             break
-    
     return t
 
 
@@ -186,9 +186,6 @@ def gradient_descent( func, initial_x, eps=1e-5, maximum_iterations=65536, lines
             break
                 
     return (x, values, runtimes, xs)
-    
-    
-
 
 ###############################################################################
 def newton( func, initial_x, eps=1e-5, maximum_iterations=65536, linesearch=bisection, *linesearch_args  ):
@@ -236,6 +233,7 @@ def newton( func, initial_x, eps=1e-5, maximum_iterations=65536, linesearch=bise
         x = x + t * direction
         
         iterations += 1
+        #print ("Newton Iterastions ", iterations)
         if iterations >= maximum_iterations:
             break
     
@@ -357,7 +355,6 @@ def objective_scalar_constraints( constraints, x, order=0 ):
     x:              the current iterate
     order:          the order of the oracle. For example, order=1 returns the value of the function and its gradient while order=2 will also return the hessian
     """
-
     if len(constraints) < 1:
         raise ValueError("Constraint cannot be empty")
         
@@ -386,16 +383,18 @@ def objective_scalar_constraints( constraints, x, order=0 ):
         values.append(value)
         
         if order >= 1:
-            # gradient = ( TODO: gradient of -log( constraint ), evaluated at xx )
-            # NOTE: constraint_value is the value of the constraint function at xx
-            # NOTE: constraint_gradient is the gradient of the constraint function at xx
+            gradient = - (constraint_gradient)/(np.asscalar(constraint_value))
+            gradients.append(gradient)
 
             if order == 2:
-                # hessian = ( TODO: Hessian of -log( constraint ), evaluated at xx );
-                # NOTE: constraint_value is the value of the constraint function at xx
-                # NOTE: constraint_gradient is the gradient of the constraint function at xx
-                # NOTE: constraint_hessian is the Hessian of the constraint function at xx
-            
+                # ((f'(x))^2 - (f(x).f''(x)))
+                # ---------------------------
+                #          (f(x))^2
+                part1 = np.power((np.asscalar(constraint_value)),2)
+                part2 = (np.asscalar(constraint_value)) 
+                hessian = (np.divide((constraint_gradient * constraint_gradient.T), part1)) - (np.divide(constraint_hessian, part2))
+                hessians.append(hessian)
+
     # sum the values, gradients and hessians for all constraints
     value = np.sum( values )
     if order == 0:
@@ -436,25 +435,27 @@ def log_barrier( func, constraints, initial_x, initial_t, mu, m, newton_eps=1e-5
         raise ValueError("Log barier epsilon must be positive")
     if mu <= 1:
         raise ValueError("Mu must be greater than one")
-        
     phi = lambda x, order: objective_scalar_constraints( constraints, x, order )
-    
     newton_iterations = []
-    
     x = np.asarray( initial_x.copy() )
     t = initial_t
     iterations = 0
+    print("m and log_barrier_eps",m,log_barrier_eps)
     while True:
         newton_f = lambda x, order: objective_log_barrier( func, phi, x, t, order)
+        #print("Newton stuff",x, 2 )
+        #input()    
         x, newton_values, runtimes, xs = newton( newton_f, x, newton_eps, maximum_iterations, linesearch )
         newton_iterations.append( len( newton_values ) )
-       
-        #t = ( TODO: update t )
-        
-        #if ( TODO: termination criterion ): break; end
-
+        #First step is creating the barrier function & then iterating for the set.
+        t *= mu
+        # The stopping condition for log barrier is to increment t till
+        # f(x(t)) − f(x*) ≤ m/t
+        print("iterations and time and m/t, log_barrier_eps", iterations, time.time(), m / t, log_barrier_eps)
+        if m/t <= log_barrier_eps:
+            break
         iterations += 1
         if iterations >= maximum_iterations:
             raise ValueError("Too many iterations")
     
-    return (x, newton_iterations)
+    return (x,newton_iterations)

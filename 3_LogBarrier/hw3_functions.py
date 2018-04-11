@@ -13,10 +13,8 @@ def main_quadratic():
     np.seterr(divide='ignore')
     # the hessian matrix of the quadratic function
     Q = np.matrix('5 2; 2 2')
-    
     # the vector of linear coefficient of the quadratic function
     v = np.matrix('21; 13')
-    
     A = np.matrix('2 1; 2 -5;-1 1')
     
     b = np.matrix('8; 10; 3')
@@ -30,12 +28,14 @@ def main_quadratic():
     initial_x = np.matrix('0.0; 0.0')
     # Find the (1e-8)-suboptimal solution
     eps = 1e-8
+    #---- The following have to be reverted
     maximum_iterations = 65536
+
     
     # Run the algorithms
-    x, values, runtimes, gd_xs = alg.gradient_descent( func, initial_x, eps, maximum_iterations, alg.backtracking )
+    x, values, runtimes, gd_xs = alg.gradient_descent( func, initial_x, eps, maximum_iterations, alg.backtracking_line_search )
     
-    x, values, runtimes, newton_xs = alg.newton( func, initial_x, eps, maximum_iterations, alg.backtracking )
+    x, values, runtimes, newton_xs = alg.newton( func, initial_x, eps, maximum_iterations, alg.backtracking_line_search )
     
     # Draw contour plots
     draw_contour( func, gd_xs, newton_xs, levels=np.arange(-300, 300, 10), x=np.arange(-4, 2.1, 0.1), y=np.arange(-4, 2.1, 0.1) )
@@ -61,8 +61,8 @@ def main_quadratic2():
     mu = np.sqrt( 2 )
     
     lower_t = 0.1249
-    
     upper_t = 2
+    #upper_t = 100
     
     
     # Start at (0,0)
@@ -81,9 +81,9 @@ def main_quadratic2():
         ts.append( t )
         
         # Run the algorithms
-        x, values, runtimes, gd_xs = alg.gradient_descent( func, initial_x, eps, maximum_iterations, alg.backtracking )
+        x, values, runtimes, gd_xs = alg.gradient_descent( func, initial_x, eps, maximum_iterations, alg.backtracking_line_search )
         gd_iterations.append(len(values)-1)
-        x, values, runtimes, newton_xs = alg.newton( func, initial_x, eps, maximum_iterations, alg.backtracking )
+        x, values, runtimes, newton_xs = alg.newton( func, initial_x, eps, maximum_iterations, alg.backtracking_line_search )
         newton_iterations.append(len(values)-1) 
         
         t *= mu
@@ -128,7 +128,7 @@ def main_linear():
         
     initial_x = np.matrix('100.0; 100.0; 100.0; 100.0; 100.0')
     newton_eps = 1e-8
-    eps = 1e-4
+    eps = 1e-3
     maximum_iterations = 65536
     
     m = len( b );
@@ -145,7 +145,7 @@ def main_linear():
     
     while  mu <= upper_mu:
         mus.append(mu)
-        x, newton_iterations = alg.log_barrier( f, constraints, initial_x, initial_t, mu, m, newton_eps, eps, maximum_iterations, alg.backtracking )
+        x, newton_iterations = alg.log_barrier( f, constraints, initial_x, initial_t, mu, m, newton_eps, eps, maximum_iterations, alg.backtracking_line_search )
         iterations.append( np.sum( newton_iterations ) )
         mu *= delta_mu
      
@@ -182,21 +182,24 @@ def quadratic_log_barrier( Q, v, A, b, x, t, order=0 ):
         return value
     
     elif order == 1:
-        # gradient = ( TODO: gradient )
-
+        si = np.zeros_like(x)
+        si = (A.T * np.divide(1, np.array((A * x) + b)))
+        gradient = t * ((Q * x) + v) - si
         return (value, gradient)
         
     elif order == 2:
-        # gradient = ( TODO: gradient )
-        # hessian = ( TODO: hessian )
-
+        si=np.zeros_like(x)
+        si = (A.T * np.divide(1,np.array((A*x) +b)))
+        gradient = t * ((Q * x) + v) - si
+        si_2 = np.zeros_like(Q)
+        d = np.diag(np.square(np.divide(1, np.array((A * x) + b).flatten())))
+        si_2 = (A.T) * d * A
+        hessian = (t * Q) + si_2
         return (value, gradient, hessian)
         
     else:
         raise ValueError("The argument \"order\" should be 0, 1 or 2")
-            
-            
-            
+
         
 ###############################################################################
 def quadratic( Q, v, c, x, order=0 ):
@@ -280,3 +283,6 @@ def draw_contour( func, gd_xs, newton_xs, levels=np.arange(5, 1000, 10), x=np.ar
         if i < 10:
             input("Press Enter to continue...")
 
+#main_quadratic()
+main_linear()
+#main_quadratic2()

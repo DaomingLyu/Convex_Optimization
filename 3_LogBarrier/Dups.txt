@@ -1,0 +1,38 @@
+int a [] = {2,1,2,1,0,1,3,4}
+
+
+
+1. First iterate through each element, set its corresponding index value to negative. 
+Ex. We have a[0] = 2, we set a[2] = -1 * a[2].
+
+By doing this, we flag it to be encountered again. 
+
+2. check the index corresponding to the value is flagged nagtive, if yes we get the duplicate element. 
+
+
+In passes,
+after 1st pass:
+
+a[] = [2,1,-2,1,0,1,3,4]
+ 
+after 2nd pass:
+
+a[] = [2,-1,-2,1,0,1,3,4]
+
+during 3rd pass:
+a[] = [2,-1,-2,1,0,1,3,4]
+we see that the element a[2] is negative, then we print it saying its a duplicate.
+
+4th pass:
+
+a[] = [2,-1,-2,1,0,1,3,4]
+we see that the elemetn a[1] is negative, then we print it/put it in a final list.
+
+Code:
+
+for i in range(0, size):
+         
+        if a[abs(a[i])] >= 0:
+            a[abs(a[i])] = -a[abs(a[i])]
+        else:
+            print (abs(a[i]), end = " ")
