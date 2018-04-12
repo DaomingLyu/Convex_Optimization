@@ -451,7 +451,7 @@ def log_barrier( func, constraints, initial_x, initial_t, mu, m, newton_eps=1e-5
         t *= mu
         # The stopping condition for log barrier is to increment t till
         # f(x(t)) − f(x*) ≤ m/t
-        print("iterations and time and m/t, log_barrier_eps", iterations, time.time(), m / t, log_barrier_eps)
+        print("iterations and time and m/t, log_barrier_eps", iterations, m / t, log_barrier_eps)
         if m/t <= log_barrier_eps:
             break
         iterations += 1
