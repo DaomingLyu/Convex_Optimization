@@ -489,8 +489,11 @@ def subgradient_descent( func, initial_x, maximum_iterations=65536, initial_step
         xs.append( x.copy() )
         
         # x = ( TODO: update of subgradient descent )
-        
         iterations += 1
+
+        eta_t = ( initial_stepsize / np.sqrt(maximum_iterations) ) 
+        x = x - (eta_t * gradient)
+
         if iterations >= maximum_iterations:
             break
                 
@@ -515,8 +518,9 @@ def adagrad( func, initial_x, maximum_iterations=65536, initial_stepsize=1, init
     xs = []
     start_time = time.time()
     iterations = 0
+    gradient_t = np.zeros(x.shape)
     
-    # subgradient updates
+    # adagrad updates
     while True:
         
         value, gradient = func( x , 1 )
@@ -529,8 +533,11 @@ def adagrad( func, initial_x, maximum_iterations=65536, initial_stepsize=1, init
         xs.append( x.copy() )
         
         # x = ( TODO: update of adagrad )
-        
         iterations += 1
+        gradient_t = gradient_t + np.square(gradient)
+        x = x - ((initial_stepsize) * np.divide(gradient, np.sqrt(initial_sum_of_squares + gradient_t)))
+
+
         if iterations >= maximum_iterations:
             break
                 
