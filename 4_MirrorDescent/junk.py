@@ -1,5 +1,5 @@
 ######
-######  This file includes different functions used in HW4
+######  This file includes different functions used in HW3
 ######
 
 import numpy as np

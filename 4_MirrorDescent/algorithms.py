@@ -488,12 +488,13 @@ def subgradient_descent( func, initial_x, maximum_iterations=65536, initial_step
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
         
-        # x = ( TODO: update of subgradient descent )
-        iterations += 1
+        # Updating the x on each iteration with corresponding step size
+        
 
         eta_t = ( initial_stepsize / np.sqrt(maximum_iterations) ) 
-        x = x - (eta_t * gradient)
+        x = x - (eta_t * gradient.T)
 
+        iterations += 1
         if iterations >= maximum_iterations:
             break
                 
@@ -519,6 +520,7 @@ def adagrad( func, initial_x, maximum_iterations=65536, initial_stepsize=1, init
     start_time = time.time()
     iterations = 0
     gradient_t = np.zeros(x.shape)
+    SG_square = 0
     
     # adagrad updates
     while True:
@@ -532,12 +534,20 @@ def adagrad( func, initial_x, maximum_iterations=65536, initial_stepsize=1, init
         runtimes.append( time.time() - start_time )
         xs.append( x.copy() )
         
+        # Updating the x on each iteration with corresponding step size
+        
+
+        SG_square += np.square(gradient)
+        adaptive_grad = np.divide(gradient, np.sqrt(initial_sum_of_squares + SG_square))
+        x = x - initial_stepsize*adaptive_grad.T
+
+        #gradient_t = gradient_t + np.square(gradient)
+        #eta_ada = initial_stepsize * np.divide(gradient.T, np.sqrt(initial_sum_of_squares + (gradient_t)))
+        #x = x - eta_ada
+        #eta = initial_stepsize / np.sqrt(initial_sum_of_squares + sum(gradient_t))
+        #x = x - (eta*gradient.T) 
         # x = ( TODO: update of adagrad )
         iterations += 1
-        gradient_t = gradient_t + np.square(gradient)
-        x = x - ((initial_stepsize) * np.divide(gradient, np.sqrt(initial_sum_of_squares + gradient_t)))
-
-
         if iterations >= maximum_iterations:
             break
                 
