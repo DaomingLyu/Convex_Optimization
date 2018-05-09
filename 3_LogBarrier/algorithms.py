@@ -443,7 +443,7 @@ def log_barrier( func, constraints, initial_x, initial_t, mu, m, newton_eps=1e-5
     print("m and log_barrier_eps",m,log_barrier_eps)
     while True:
         newton_f = lambda x, order: objective_log_barrier( func, phi, x, t, order)
-        #print("Newton stuff",x, 2 )
+        print("Newton stuff",x, 2 )
         #input()    
         x, newton_values, runtimes, xs = newton( newton_f, x, newton_eps, maximum_iterations, linesearch )
         newton_iterations.append( len( newton_values ) )
