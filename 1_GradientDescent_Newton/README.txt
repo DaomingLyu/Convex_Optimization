@@ -1,6 +1,6 @@
 Bisection search algorithm to get familiar with ways to implement the oracle access.
 
-Bisection. Implementation of the bisection method in algorithms.py. See your notes for the implementation.
+Bisection. Implementation of the bisection method in algorithms.py.
 
 Backtracking line search. Implementation of the backtracking line search in algorithms.py. This is algorithm 9.2 of Boyd and Vandenberghe.
 
