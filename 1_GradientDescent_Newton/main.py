@@ -3,7 +3,7 @@
 ######
 
 import numpy as np
-import hw1_functions as hw1_func
+import functions as hw1_func
 import algorithms as alg
 
 
